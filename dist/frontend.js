@@ -63,9 +63,9 @@ var CSS = String.raw`
   background:var(--nt-chip)!important;border:1px solid var(--nt-glass-border)!important;border-radius:999px!important;padding:2px!important;
 }
 
-/* regenerate: a separate chip on the left, away from the swipe arrows on the right */
-[data-component="BubbleMessage"] .nt-regen{display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 12px;margin-right:auto;order:-1;flex-shrink:0;border:1px solid var(--nt-glass-border);border-radius:999px;background:var(--nt-chip);color:inherit;font:inherit;font-size:13px;cursor:pointer;opacity:.85}
-[data-component="BubbleMessage"] .nt-regen-inpill{order:0;margin-right:0;width:32px;height:32px;padding:0;justify-content:center;border:none;border-radius:10px;background:transparent}
+/* regenerate: a separate round button left of the swipe pill, with a gap */
+[data-component="BubbleMessage"] .nt-regen{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;padding:0;margin:0 10px 0 0;flex-shrink:0;align-self:center;border:1px solid var(--nt-glass-border);border-radius:999px;background:var(--nt-chip);color:inherit;cursor:pointer;opacity:.85}
+[data-component="BubbleMessage"] .nt-regen-inpill{margin:0;width:32px;height:32px;padding:0;justify-content:center;border:none;border-radius:10px;background:transparent}
 [data-component="BubbleMessage"] .nt-regen-inpill span{display:none}
 [data-component="BubbleMessage"] .nt-regen svg{width:15px;height:15px}
 [data-component="BubbleMessage"] .nt-regen:active{transform:scale(.92)}
@@ -303,13 +303,13 @@ function ensureRegen() {
     return;
   const controls = last.querySelector('[class*="_controls_"]');
   const pill = last.querySelector('[class*="_actionsPill_"]');
-  const btn = el("button", { type: "button", class: "nt-regen", "aria-label": "다시 생성", title: "다시 생성" }, `${ICON.regen}<span>다시 생성</span>`);
+  const btn = el("button", { type: "button", class: "nt-regen", "aria-label": "다시 생성", title: "다시 생성" }, `${ICON.regen}`);
   btn.addEventListener("click", (e) => {
     e.stopPropagation();
     press("Regenerate");
   });
   if (controls?.parentElement) {
-    controls.parentElement.insertBefore(btn, controls.parentElement.firstChild);
+    controls.before(btn);
   } else if (pill) {
     btn.classList.add("nt-regen-inpill");
     pill.prepend(btn);

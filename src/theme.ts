@@ -144,8 +144,8 @@ function ensureMessageTools() {
   })
 }
 
-// Regenerate is its own button on the left of the latest character reply's swipe row,
-// apart from the swipe arrows (right) and the ✱ button (composer).
+// Regenerate is its own round button just left of the latest reply's swipe pill, with a gap
+// so it is not pressed by mistake (and far from the ✱ button in the composer).
 function ensureRegen() {
   const msgs = document.querySelectorAll('[data-component="BubbleMessage"][data-part="character"]')
   const last = msgs[msgs.length - 1] as HTMLElement | undefined
@@ -153,10 +153,10 @@ function ensureRegen() {
   if (!last || last.querySelector('.nt-regen')) return
   const controls = last.querySelector('[class*="_controls_"]')
   const pill = last.querySelector('[class*="_actionsPill_"]')
-  const btn = el('button', { type: 'button', class: 'nt-regen', 'aria-label': '다시 생성', title: '다시 생성' }, `${ICON.regen}<span>다시 생성</span>`)
+  const btn = el('button', { type: 'button', class: 'nt-regen', 'aria-label': '다시 생성', title: '다시 생성' }, `${ICON.regen}`)
   btn.addEventListener('click', (e) => { e.stopPropagation(); press('Regenerate') })
   if (controls?.parentElement) {
-    controls.parentElement.insertBefore(btn, controls.parentElement.firstChild)
+    controls.before(btn)
   } else if (pill) {
     btn.classList.add('nt-regen-inpill')
     pill.prepend(btn)
