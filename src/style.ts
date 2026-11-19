@@ -64,6 +64,11 @@ export const CSS = String.raw`
   background:var(--nt-chip)!important;border:1px solid var(--nt-glass-border)!important;border-radius:999px!important;padding:2px!important;
 }
 
+[data-component="BubbleMessage"] .nt-regen{display:inline-flex;align-items:center;justify-content:center;width:30px;height:28px;margin-left:4px;border:none;border-left:1px solid var(--nt-line);border-radius:0 999px 999px 0;background:transparent;color:inherit;cursor:pointer;padding:0 0 0 2px;opacity:.8}
+[data-component="BubbleMessage"] [class*="_actionsPill_"] .nt-regen{border-left:none;border-radius:10px;width:32px;height:32px;margin-left:0}
+[data-component="BubbleMessage"] .nt-regen svg{width:15px;height:15px}
+[data-component="BubbleMessage"] .nt-regen:active{transform:scale(.92)}
+
 /* ---------- body text: like a book ---------- */
 [data-component="BubbleMessage"] [class*="_prose_"]{font-size:16px;line-height:1.85;word-break:normal;line-break:strict;overflow-wrap:anywhere;text-align:justify;text-justify:inter-character}
 [data-component="BubbleMessage"] [class*="_prose_"] p{margin:0 0 .95em}

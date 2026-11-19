@@ -63,6 +63,11 @@ var CSS = String.raw`
   background:var(--nt-chip)!important;border:1px solid var(--nt-glass-border)!important;border-radius:999px!important;padding:2px!important;
 }
 
+[data-component="BubbleMessage"] .nt-regen{display:inline-flex;align-items:center;justify-content:center;width:30px;height:28px;margin-left:4px;border:none;border-left:1px solid var(--nt-line);border-radius:0 999px 999px 0;background:transparent;color:inherit;cursor:pointer;padding:0 0 0 2px;opacity:.8}
+[data-component="BubbleMessage"] [class*="_actionsPill_"] .nt-regen{border-left:none;border-radius:10px;width:32px;height:32px;margin-left:0}
+[data-component="BubbleMessage"] .nt-regen svg{width:15px;height:15px}
+[data-component="BubbleMessage"] .nt-regen:active{transform:scale(.92)}
+
 /* ---------- body text: like a book ---------- */
 [data-component="BubbleMessage"] [class*="_prose_"]{font-size:16px;line-height:1.85;word-break:normal;line-break:strict;overflow-wrap:anywhere;text-align:justify;text-justify:inter-character}
 [data-component="BubbleMessage"] [class*="_prose_"] p{margin:0 0 .95em}
@@ -285,6 +290,25 @@ function ensureMessageTools() {
       pill.append(more);
   });
 }
+function ensureRegen() {
+  const msgs = document.querySelectorAll('[data-component="BubbleMessage"][data-part="character"]');
+  const last = msgs[msgs.length - 1];
+  document.querySelectorAll(".nt-regen").forEach((b) => {
+    if (!last || !last.contains(b))
+      b.remove();
+  });
+  if (!last || last.querySelector(".nt-regen"))
+    return;
+  const host = last.querySelector('[class*="_controls_"]') ?? last.querySelector('[class*="_actionsPill_"]');
+  if (!host)
+    return;
+  const btn = el("button", { type: "button", class: "nt-regen", "aria-label": "다시 생성", title: "다시 생성" }, ICON.regen);
+  btn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    press("Regenerate");
+  });
+  host.append(btn);
+}
 function openPlusMenu(anchor) {
   const items = [
     ["이어쓰기 (마지막 답변에 덧붙이기)", ICON.cont, () => press("Continue")],
@@ -318,14 +342,12 @@ function ensureComposer() {
   if (!bar) {
     bar = el("div", { class: "nt-row" });
     const group = el("div", { class: "nt-group" });
-    const regen = el("button", { type: "button", "aria-label": "다시 생성" }, ICON.regen);
-    regen.addEventListener("click", () => press("Regenerate"));
     const star = el("button", { type: "button", "aria-label": "별표 넣기" }, ICON.star);
     star.addEventListener("mousedown", (e) => e.preventDefault());
     star.addEventListener("click", () => insertAtCursor("*"));
     const opts = el("button", { type: "button", "aria-label": "프리셋 옵션", class: "nt-opts" }, ICON.sliders);
     opts.addEventListener("click", () => press("Prompt Variables"));
-    group.append(regen, star, opts);
+    group.append(star, opts);
     const persona = el("button", { type: "button", class: "nt-chipbtn nt-persona", "aria-label": "페르소나 바꾸기" }, `${ICON.user}<span class="nt-label">내 정보</span>`);
     persona.addEventListener("click", () => press("Switch persona"));
     const model = el("button", { type: "button", class: "nt-chipbtn nt-model", "aria-label": "모델 바꾸기" }, `<span class="nt-label"></span><span class="nt-sep"></span>${ICON.swap}`);
@@ -391,6 +413,7 @@ function install(addStyle) {
       ensureComposer();
       ensureTopBar();
       ensureMessageTools();
+      ensureRegen();
       ensureFolds();
     } catch (e) {
       console.warn("[novel-theme]", e);
@@ -411,7 +434,7 @@ function install(addStyle) {
     clearInterval(iv);
     removeStyle();
     closeMenu();
-    document.querySelectorAll(".nt-row,.nt-plus,.nt-back,.nt-title,.nt-fold-btn,.nt-msg-more").forEach((n) => n.remove());
+    document.querySelectorAll(".nt-row,.nt-plus,.nt-back,.nt-title,.nt-fold-btn,.nt-msg-more,.nt-regen").forEach((n) => n.remove());
     document.querySelectorAll(".nt-msg-hidden").forEach((n) => n.classList.remove("nt-msg-hidden"));
     document.querySelectorAll(".nt-fold").forEach((n) => n.classList.remove("nt-fold"));
     document.querySelectorAll("[data-nt-checked]").forEach((n) => n.removeAttribute("data-nt-checked"));

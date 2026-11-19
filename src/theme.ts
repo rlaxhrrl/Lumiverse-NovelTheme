@@ -144,6 +144,19 @@ function ensureMessageTools() {
   })
 }
 
+// Regenerate lives next to the swipe arrows of the latest character reply, away from the ✱ button.
+function ensureRegen() {
+  const msgs = document.querySelectorAll('[data-component="BubbleMessage"][data-part="character"]')
+  const last = msgs[msgs.length - 1] as HTMLElement | undefined
+  document.querySelectorAll('.nt-regen').forEach((b) => { if (!last || !last.contains(b)) b.remove() })
+  if (!last || last.querySelector('.nt-regen')) return
+  const host = last.querySelector('[class*="_controls_"]') ?? last.querySelector('[class*="_actionsPill_"]')
+  if (!host) return
+  const btn = el('button', { type: 'button', class: 'nt-regen', 'aria-label': '다시 생성', title: '다시 생성' }, ICON.regen)
+  btn.addEventListener('click', (e) => { e.stopPropagation(); press('Regenerate') })
+  host.append(btn)
+}
+
 function openPlusMenu(anchor: HTMLElement) {
   const items: MenuItem[] = [
     ['이어쓰기 (마지막 답변에 덧붙이기)', ICON.cont, () => press('Continue')],
@@ -176,14 +189,12 @@ function ensureComposer() {
   if (!bar) {
     bar = el('div', { class: 'nt-row' })
     const group = el('div', { class: 'nt-group' })
-    const regen = el('button', { type: 'button', 'aria-label': '다시 생성' }, ICON.regen)
-    regen.addEventListener('click', () => press('Regenerate'))
     const star = el('button', { type: 'button', 'aria-label': '별표 넣기' }, ICON.star)
     star.addEventListener('mousedown', (e) => e.preventDefault())
     star.addEventListener('click', () => insertAtCursor('*'))
     const opts = el('button', { type: 'button', 'aria-label': '프리셋 옵션', class: 'nt-opts' }, ICON.sliders)
     opts.addEventListener('click', () => press('Prompt Variables'))
-    group.append(regen, star, opts)
+    group.append(star, opts)
 
     const persona = el('button', { type: 'button', class: 'nt-chipbtn nt-persona', 'aria-label': '페르소나 바꾸기' }, `${ICON.user}<span class="nt-label">내 정보</span>`)
     persona.addEventListener('click', () => press('Switch persona'))
@@ -243,7 +254,7 @@ export function install(addStyle: (css: string) => () => void): () => void {
   let queued = false
   const tick = () => {
     queued = false
-    try { ensureComposer(); ensureTopBar(); ensureMessageTools(); ensureFolds() } catch (e) { console.warn('[novel-theme]', e) }
+    try { ensureComposer(); ensureTopBar(); ensureMessageTools(); ensureRegen(); ensureFolds() } catch (e) { console.warn('[novel-theme]', e) }
   }
   const schedule = () => { if (!queued) { queued = true; requestAnimationFrame(tick) } }
   const mo = new MutationObserver(schedule)
@@ -252,7 +263,7 @@ export function install(addStyle: (css: string) => () => void): () => void {
   const iv = setInterval(schedule, 2000)
   return () => {
     mo.disconnect(); clearInterval(iv); removeStyle(); closeMenu()
-    document.querySelectorAll('.nt-row,.nt-plus,.nt-back,.nt-title,.nt-fold-btn,.nt-msg-more').forEach((n) => n.remove())
+    document.querySelectorAll('.nt-row,.nt-plus,.nt-back,.nt-title,.nt-fold-btn,.nt-msg-more,.nt-regen').forEach((n) => n.remove())
     document.querySelectorAll('.nt-msg-hidden').forEach((n) => n.classList.remove('nt-msg-hidden'))
     document.querySelectorAll('.nt-fold').forEach((n) => n.classList.remove('nt-fold'))
     document.querySelectorAll('[data-nt-checked]').forEach((n) => n.removeAttribute('data-nt-checked'))
