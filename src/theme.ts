@@ -144,17 +144,23 @@ function ensureMessageTools() {
   })
 }
 
-// Regenerate sits at the left end of the swipe arrows of the latest character reply, away from the ✱ button.
+// Regenerate is its own button on the left of the latest character reply's swipe row,
+// apart from the swipe arrows (right) and the ✱ button (composer).
 function ensureRegen() {
   const msgs = document.querySelectorAll('[data-component="BubbleMessage"][data-part="character"]')
   const last = msgs[msgs.length - 1] as HTMLElement | undefined
   document.querySelectorAll('.nt-regen').forEach((b) => { if (!last || !last.contains(b)) b.remove() })
   if (!last || last.querySelector('.nt-regen')) return
-  const host = last.querySelector('[class*="_controls_"]') ?? last.querySelector('[class*="_actionsPill_"]')
-  if (!host) return
-  const btn = el('button', { type: 'button', class: 'nt-regen', 'aria-label': '다시 생성', title: '다시 생성' }, ICON.regen)
+  const controls = last.querySelector('[class*="_controls_"]')
+  const pill = last.querySelector('[class*="_actionsPill_"]')
+  const btn = el('button', { type: 'button', class: 'nt-regen', 'aria-label': '다시 생성', title: '다시 생성' }, `${ICON.regen}<span>다시 생성</span>`)
   btn.addEventListener('click', (e) => { e.stopPropagation(); press('Regenerate') })
-  host.prepend(btn)
+  if (controls?.parentElement) {
+    controls.parentElement.insertBefore(btn, controls.parentElement.firstChild)
+  } else if (pill) {
+    btn.classList.add('nt-regen-inpill')
+    pill.prepend(btn)
+  }
 }
 
 function openPlusMenu(anchor: HTMLElement) {

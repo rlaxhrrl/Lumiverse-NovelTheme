@@ -64,8 +64,10 @@ export const CSS = String.raw`
   background:var(--nt-chip)!important;border:1px solid var(--nt-glass-border)!important;border-radius:999px!important;padding:2px!important;
 }
 
-[data-component="BubbleMessage"] .nt-regen{display:inline-flex;align-items:center;justify-content:center;width:30px;height:28px;margin-right:4px;border:none;border-right:1px solid var(--nt-line);border-radius:999px 0 0 999px;background:transparent;color:inherit;cursor:pointer;padding:0 2px 0 0;opacity:.8}
-[data-component="BubbleMessage"] [class*="_actionsPill_"] .nt-regen{border-right:none;border-radius:10px;width:32px;height:32px;margin-right:0}
+/* regenerate: a separate chip on the left, away from the swipe arrows on the right */
+[data-component="BubbleMessage"] .nt-regen{display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 12px;margin-right:auto;order:-1;flex-shrink:0;border:1px solid var(--nt-glass-border);border-radius:999px;background:var(--nt-chip);color:inherit;font:inherit;font-size:13px;cursor:pointer;opacity:.85}
+[data-component="BubbleMessage"] .nt-regen-inpill{order:0;margin-right:0;width:32px;height:32px;padding:0;justify-content:center;border:none;border-radius:10px;background:transparent}
+[data-component="BubbleMessage"] .nt-regen-inpill span{display:none}
 [data-component="BubbleMessage"] .nt-regen svg{width:15px;height:15px}
 [data-component="BubbleMessage"] .nt-regen:active{transform:scale(.92)}
 
