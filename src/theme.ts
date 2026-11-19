@@ -80,9 +80,72 @@ function insertAtCursor(text: string) {
 let menuEl: HTMLElement | null = null
 function closeMenu() { menuEl?.remove(); menuEl = null }
 
-function openPlusMenu(anchor: HTMLElement) {
+type MenuItem = [string, string, () => void]
+
+function openMenu(anchor: HTMLElement, items: MenuItem[], below = false) {
   if (menuEl) { closeMenu(); return }
-  const items: [string, string, () => void][] = [
+  const m = el('div', { class: 'nt-menu', role: 'menu' })
+  for (const [label, icon, run] of items) {
+    const b = el('button', { type: 'button', role: 'menuitem' }, `${icon}<span></span>`)
+    b.querySelector('span')!.textContent = label
+    b.addEventListener('click', (e) => { e.stopPropagation(); closeMenu(); setTimeout(run, 0) })
+    m.append(b)
+  }
+  document.body.append(m)
+  const r = anchor.getBoundingClientRect()
+  const h = m.offsetHeight
+  const w = m.offsetWidth
+  const left = below ? r.right - w : r.left
+  m.style.left = `${Math.max(8, Math.min(left, innerWidth - w - 8))}px`
+  const top = below && r.bottom + h + 8 < innerHeight ? r.bottom + 6 : r.top - h - 8
+  m.style.top = `${Math.max(8, top)}px`
+  menuEl = m
+  setTimeout(() => document.addEventListener('click', closeMenu, { once: true }), 0)
+}
+
+// Message tools that live in the "⋯" menu instead of the always-visible row.
+const MSG_EXTRA: [RegExp, string, string][] = [
+  [/^Hide/, 'AI에게서 숨기기', I('<path d="M9.9 4.2A10 10 0 0 1 12 4c7 0 10 8 10 8a13 13 0 0 1-1.7 2.7"/><path d="M6.6 6.6A13 13 0 0 0 2 12s3 8 10 8a9.7 9.7 0 0 0 5.4-1.6"/><path d="M2 2l20 20"/>')],
+  [/^Unhide/, '숨김 해제', I('<path d="M2 12s3-8 10-8 10 8 10 8-3 8-10 8-10-8-10-8z"/><circle cx="12" cy="12" r="3"/>')],
+  [/^Protect context/, '앵커 걸기 (맥락 보호)', I('<circle cx="12" cy="5" r="3"/><path d="M12 22V8"/><path d="M5 12H2a10 10 0 0 0 20 0h-3"/>')],
+  [/^(Unprotect|Remove anchor|Stop protecting)/, '앵커 해제', I('<circle cx="12" cy="5" r="3"/><path d="M12 22V8"/><path d="M5 12H2a10 10 0 0 0 20 0h-3"/>')],
+  [/^Prompt Breakdown/, '프롬프트 통계', I('<path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/>')],
+]
+
+function extraButtons(pill: Element): [HTMLButtonElement, string, string][] {
+  const out: [HTMLButtonElement, string, string][] = []
+  pill.querySelectorAll('button:not(.nt-msg-more)').forEach((b) => {
+    const lab = labelOf(b)
+    const hit = MSG_EXTRA.find(([re]) => re.test(lab))
+    if (hit) out.push([b as HTMLButtonElement, hit[1], hit[2]])
+  })
+  return out
+}
+
+function ensureMessageTools() {
+  document.querySelectorAll('[data-component="BubbleMessage"] [class*="_actionsPill_"]').forEach((pill) => {
+    const extras = extraButtons(pill)
+    pill.querySelectorAll('button:not(.nt-msg-more)').forEach((b) => {
+      b.classList.toggle('nt-msg-hidden', extras.some(([x]) => x === b))
+    })
+    let more = pill.querySelector('.nt-msg-more') as HTMLButtonElement | null
+    if (!extras.length) { more?.remove(); return }
+    if (!more) {
+      more = el('button', { type: 'button', class: 'nt-msg-more', 'aria-label': '메시지 메뉴 더보기', title: '더보기' }, ICON.more)
+      more.addEventListener('click', (e) => {
+        e.stopPropagation()
+        const items: MenuItem[] = extraButtons(pill).map(([b, label, icon]) => [label, icon, () => b.click()])
+        openMenu(more!, items, true)
+      })
+    }
+    const del = Array.from(pill.querySelectorAll('button')).find((b) => /^Delete/.test(labelOf(b)))
+    if (del && more.nextElementSibling !== del) pill.insertBefore(more, del)
+    else if (!del && more.parentElement !== pill) pill.append(more)
+  })
+}
+
+function openPlusMenu(anchor: HTMLElement) {
+  const items: MenuItem[] = [
     ['이어쓰기 (마지막 답변에 덧붙이기)', ICON.cont, () => press('Continue')],
     ['대사 대신 쓰기', ICON.chat, () => press('Impersonate')],
     ['빠른 답장', ICON.quote, () => press('Quick replies')],
@@ -94,20 +157,7 @@ function openPlusMenu(anchor: HTMLElement) {
     ['더보기', ICON.more, () => press('Extras')],
     ['버튼 설정', ICON.gear, () => press('Customize composer')],
   ]
-  const m = el('div', { class: 'nt-menu', role: 'menu' })
-  for (const [label, icon, run] of items) {
-    const b = el('button', { type: 'button', role: 'menuitem' }, `${icon}<span></span>`)
-    b.querySelector('span')!.textContent = label
-    b.addEventListener('click', (e) => { e.stopPropagation(); closeMenu(); setTimeout(run, 0) })
-    m.append(b)
-  }
-  document.body.append(m)
-  const r = anchor.getBoundingClientRect()
-  const h = m.offsetHeight
-  m.style.left = `${Math.max(8, Math.min(r.left, innerWidth - m.offsetWidth - 8))}px`
-  m.style.top = `${Math.max(8, r.top - h - 8)}px`
-  menuEl = m
-  setTimeout(() => document.addEventListener('click', closeMenu, { once: true }), 0)
+  openMenu(anchor, items)
 }
 
 function ensureComposer() {
@@ -193,7 +243,7 @@ export function install(addStyle: (css: string) => () => void): () => void {
   let queued = false
   const tick = () => {
     queued = false
-    try { ensureComposer(); ensureTopBar(); ensureFolds() } catch (e) { console.warn('[novel-theme]', e) }
+    try { ensureComposer(); ensureTopBar(); ensureMessageTools(); ensureFolds() } catch (e) { console.warn('[novel-theme]', e) }
   }
   const schedule = () => { if (!queued) { queued = true; requestAnimationFrame(tick) } }
   const mo = new MutationObserver(schedule)
@@ -202,7 +252,8 @@ export function install(addStyle: (css: string) => () => void): () => void {
   const iv = setInterval(schedule, 2000)
   return () => {
     mo.disconnect(); clearInterval(iv); removeStyle(); closeMenu()
-    document.querySelectorAll('.nt-row,.nt-plus,.nt-back,.nt-title,.nt-fold-btn').forEach((n) => n.remove())
+    document.querySelectorAll('.nt-row,.nt-plus,.nt-back,.nt-title,.nt-fold-btn,.nt-msg-more').forEach((n) => n.remove())
+    document.querySelectorAll('.nt-msg-hidden').forEach((n) => n.classList.remove('nt-msg-hidden'))
     document.querySelectorAll('.nt-fold').forEach((n) => n.classList.remove('nt-fold'))
     document.querySelectorAll('[data-nt-checked]').forEach((n) => n.removeAttribute('data-nt-checked'))
   }

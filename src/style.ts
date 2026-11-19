@@ -41,14 +41,23 @@ export const CSS = String.raw`
 }
 [data-component="BubbleMessage"] [class*="_actionsPill_"] button{width:32px!important;height:32px!important;border-radius:10px!important}
 [data-component="BubbleMessage"] [class*="_actionsPill_"] button svg{width:16px!important;height:16px!important}
-[data-component="BubbleMessage"] [class*="_actionsPill_"] button[aria-label="Hide"],
-[data-component="BubbleMessage"] [class*="_actionsPill_"] button[aria-label="Unhide"],
+/* hide / anchor / prompt breakdown live in the ⋯ menu, so the row never shifts */
+[data-component="BubbleMessage"] [class*="_actionsPill_"] .nt-msg-hidden{display:none!important}
+[data-component="BubbleMessage"] [class*="_actionsPill_"] button[aria-label^="Hide"],
+[data-component="BubbleMessage"] [class*="_actionsPill_"] button[aria-label^="Unhide"],
 [data-component="BubbleMessage"] [class*="_actionsPill_"] button[aria-label^="Protect context"],
 [data-component="BubbleMessage"] [class*="_actionsPill_"] button[aria-label^="Unprotect"],
-[data-component="BubbleMessage"] [class*="_actionsPill_"] button[aria-label="Prompt Breakdown"]{display:none!important}
-[data-component="BubbleMessage"]:hover [class*="_actionsPill_"] button,
-[data-component="BubbleMessage"]:focus-within [class*="_actionsPill_"] button{display:inline-flex!important}
-[data-component="BubbleMessage"] [class*="_actionsPill_"] button[aria-label="Delete"]{margin-left:6px;color:var(--lumiverse-danger)!important;opacity:.85}
+[data-component="BubbleMessage"] [class*="_actionsPill_"] button[aria-label^="Remove anchor"],
+[data-component="BubbleMessage"] [class*="_actionsPill_"] button[aria-label^="Prompt Breakdown"],
+[data-component="BubbleMessage"] [class*="_actionsPill_"] button[title^="Hide"],
+[data-component="BubbleMessage"] [class*="_actionsPill_"] button[title^="Unhide"],
+[data-component="BubbleMessage"] [class*="_actionsPill_"] button[title^="Protect context"],
+[data-component="BubbleMessage"] [class*="_actionsPill_"] button[title^="Unprotect"],
+[data-component="BubbleMessage"] [class*="_actionsPill_"] button[title^="Remove anchor"],
+[data-component="BubbleMessage"] [class*="_actionsPill_"] button[title^="Prompt Breakdown"]{display:none!important}
+[data-component="BubbleMessage"] [class*="_actionsPill_"] .nt-msg-more{display:inline-flex;align-items:center;justify-content:center;border:none;background:transparent;color:inherit;cursor:pointer;padding:0}
+[data-component="BubbleMessage"] [class*="_actionsPill_"] button[aria-label="Delete"],
+[data-component="BubbleMessage"] [class*="_actionsPill_"] button[title="Delete"]{margin-left:6px;color:var(--lumiverse-danger)!important;opacity:.85}
 
 /* swipe ‹ 1/3 › as a small pill */
 [data-component="BubbleMessage"] [class*="_controls_"]{
