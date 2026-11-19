@@ -64,8 +64,11 @@ export const CSS = String.raw`
   background:var(--nt-chip)!important;border:1px solid var(--nt-glass-border)!important;border-radius:999px!important;padding:2px!important;
 }
 
-/* regenerate: a separate round button left of the swipe pill, with a gap */
-[data-component="BubbleMessage"] .nt-regen{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;padding:0;margin:0 10px 0 0;flex-shrink:0;align-self:center;border:1px solid var(--nt-glass-border);border-radius:999px;background:var(--nt-chip);color:inherit;cursor:pointer;opacity:.85}
+/* regenerate: bottom-left of the latest reply, same line as the swipe pill (bottom-right).
+   The negative bottom margin lets the pill (align-self:flex-end) rise onto this line. */
+[data-component="BubbleMessage"] .nt-regen{--nt-rh:calc(var(--lumiverse-btn-icon-sm, 28px) + 6px);position:relative;z-index:1;align-self:flex-start;display:inline-flex;align-items:center;gap:6px;height:var(--nt-rh);margin:0 0 calc(-1 * var(--nt-rh)) 24px;padding:0 12px;flex-shrink:0;border:1px solid var(--nt-glass-border);border-radius:999px;background:var(--nt-chip);color:inherit;font:inherit;font-size:13px;cursor:pointer;opacity:.85}
+@media (max-width:768px){[data-component="BubbleMessage"] .nt-regen{margin-left:12px}}
+@media (max-width:480px){[data-component="BubbleMessage"] .nt-regen{margin-left:10px}}
 [data-component="BubbleMessage"] .nt-regen-inpill{margin:0;width:32px;height:32px;padding:0;justify-content:center;border:none;border-radius:10px;background:transparent}
 [data-component="BubbleMessage"] .nt-regen-inpill span{display:none}
 [data-component="BubbleMessage"] .nt-regen svg{width:15px;height:15px}
