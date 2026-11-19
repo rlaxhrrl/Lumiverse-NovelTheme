@@ -65,7 +65,7 @@ export const CSS = String.raw`
 }
 
 /* ---------- body text: like a book ---------- */
-[data-component="BubbleMessage"] [class*="_prose_"]{font-size:16px;line-height:1.85;word-break:keep-all;overflow-wrap:anywhere}
+[data-component="BubbleMessage"] [class*="_prose_"]{font-size:16px;line-height:1.85;word-break:keep-all;overflow-wrap:anywhere;text-align:justify;text-justify:inter-character}
 [data-component="BubbleMessage"] [class*="_prose_"] p{margin:0 0 .95em}
 [data-component="BubbleMessage"] [class*="_prose_"] p:last-child{margin-bottom:0}
 @media (min-width:900px){
