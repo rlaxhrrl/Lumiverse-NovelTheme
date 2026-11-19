@@ -144,7 +144,7 @@ function ensureMessageTools() {
   })
 }
 
-// Regenerate lives next to the swipe arrows of the latest character reply, away from the ✱ button.
+// Regenerate sits at the left end of the swipe arrows of the latest character reply, away from the ✱ button.
 function ensureRegen() {
   const msgs = document.querySelectorAll('[data-component="BubbleMessage"][data-part="character"]')
   const last = msgs[msgs.length - 1] as HTMLElement | undefined
@@ -154,7 +154,7 @@ function ensureRegen() {
   if (!host) return
   const btn = el('button', { type: 'button', class: 'nt-regen', 'aria-label': '다시 생성', title: '다시 생성' }, ICON.regen)
   btn.addEventListener('click', (e) => { e.stopPropagation(); press('Regenerate') })
-  host.append(btn)
+  host.prepend(btn)
 }
 
 function openPlusMenu(anchor: HTMLElement) {

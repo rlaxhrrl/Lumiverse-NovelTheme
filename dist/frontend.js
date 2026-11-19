@@ -63,8 +63,8 @@ var CSS = String.raw`
   background:var(--nt-chip)!important;border:1px solid var(--nt-glass-border)!important;border-radius:999px!important;padding:2px!important;
 }
 
-[data-component="BubbleMessage"] .nt-regen{display:inline-flex;align-items:center;justify-content:center;width:30px;height:28px;margin-left:4px;border:none;border-left:1px solid var(--nt-line);border-radius:0 999px 999px 0;background:transparent;color:inherit;cursor:pointer;padding:0 0 0 2px;opacity:.8}
-[data-component="BubbleMessage"] [class*="_actionsPill_"] .nt-regen{border-left:none;border-radius:10px;width:32px;height:32px;margin-left:0}
+[data-component="BubbleMessage"] .nt-regen{display:inline-flex;align-items:center;justify-content:center;width:30px;height:28px;margin-right:4px;border:none;border-right:1px solid var(--nt-line);border-radius:999px 0 0 999px;background:transparent;color:inherit;cursor:pointer;padding:0 2px 0 0;opacity:.8}
+[data-component="BubbleMessage"] [class*="_actionsPill_"] .nt-regen{border-right:none;border-radius:10px;width:32px;height:32px;margin-right:0}
 [data-component="BubbleMessage"] .nt-regen svg{width:15px;height:15px}
 [data-component="BubbleMessage"] .nt-regen:active{transform:scale(.92)}
 
@@ -307,7 +307,7 @@ function ensureRegen() {
     e.stopPropagation();
     press("Regenerate");
   });
-  host.append(btn);
+  host.prepend(btn);
 }
 function openPlusMenu(anchor) {
   const items = [
