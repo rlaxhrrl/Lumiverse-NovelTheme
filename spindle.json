@@ -1,0 +1,12 @@
+{
+  "version": "0.1.0",
+  "name": "Novel Theme",
+  "identifier": "noveltheme",
+  "author": "rlaxhrrl",
+  "github": "https://github.com/rlaxhrrl/Lumiverse-NovelTheme",
+  "homepage": "https://github.com/rlaxhrrl/Lumiverse-NovelTheme",
+  "description": "심플한 소설형 채팅 화면: 말풍선 없는 본문, 정리된 메시지 도구, 새 입력 패널(이어서 · ✱ · 모델 바꾸기), 긴 상태창 접기. 끄면 원래 화면으로 돌아갑니다.",
+  "permissions": [],
+  "entry_frontend": "dist/frontend.js",
+  "minimum_lumiverse_version": "1.2.0"
+}
